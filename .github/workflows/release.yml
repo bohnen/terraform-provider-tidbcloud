@@ -31,7 +31,7 @@ jobs:
           cache: true
       - uses: hashicorp/setup-terraform@v4
       - run: go mod download
-      - run: go build -v .
+      - run: go build -v -o /tmp/terraform-provider-tidbcloud .
       - run: go test -v -cover ./internal/provider/
       - run: go generate ./...
       - name: git diff
