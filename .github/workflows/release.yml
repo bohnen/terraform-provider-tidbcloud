@@ -1,12 +1,10 @@
-# Terraform Provider release workflow.
-name: Release
+# Fork Terraform Provider release workflow.
+name: Fork Release
 
-# This GitHub action creates a release when a tag that matches the pattern
-# "v*" (e.g. v0.1.0) is created.
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*-bohnen.*'
 
 # Releases need permissions to read and write the repository contents.
 # GitHub considers creating releases and uploading assets as writing contents.
@@ -16,15 +14,30 @@ permissions:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
           # Allow goreleaser to access older tag information.
           fetch-depth: 0
+      - name: Verify release tag is on release/fork-v0.4
+        run: |
+          git fetch origin release/fork-v0.4:refs/remotes/origin/release/fork-v0.4
+          tag_commit="$(git rev-list -n 1 "${GITHUB_REF_NAME}")"
+          git merge-base --is-ancestor "${tag_commit}" origin/release/fork-v0.4
       - uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
           cache: true
+      - uses: hashicorp/setup-terraform@v4
+      - run: go mod download
+      - run: go build -v .
+      - run: go test -v -cover ./internal/provider/
+      - run: go generate ./...
+      - name: git diff
+        run: |
+          git diff --compact-summary --exit-code || \
+            (echo; echo "Unexpected difference in directories after code generation. Run 'go generate ./...' command and commit."; exit 1)
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v7
         id: import_gpg

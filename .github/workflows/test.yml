@@ -1,17 +1,15 @@
-# Terraform Provider testing workflow.
-name: Tests
+# Fork release branch testing workflow.
+name: Fork Release Tests
 
-# This GitHub action runs your tests for each pull request and push.
-# Optionally, you can turn it on using a schedule for regular testing.
 on:
   pull_request:
     branches:
-      - main
+      - release/fork-v0.4
     paths-ignore:
       - 'README.md'
   push:
     branches:
-      - main
+      - release/fork-v0.4
     paths-ignore:
       - 'README.md'
 
@@ -20,7 +18,6 @@ permissions:
   contents: read
 
 jobs:
-  # Ensure project builds before running testing matrix
   build:
     name: Build
     runs-on: ubuntu-latest
