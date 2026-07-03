@@ -4,11 +4,14 @@ page_title: "tidbcloud_import Resource - terraform-provider-tidbcloud"
 subcategory: ""
 description: |-
   import resource
+  ~> Deprecated: This resource relies on a legacy API that has been removed and no longer works. Use tidbcloud_serverless_import (TiDB Cloud Starter/Essential) or tidbcloud_dedicated_import (TiDB Cloud Dedicated) instead.
 ---
 
 # tidbcloud_import (Resource)
 
 import resource
+
+~> **Deprecated:** This resource relies on a legacy API that has been removed and no longer works. Use `tidbcloud_serverless_import` (TiDB Cloud Starter/Essential) or `tidbcloud_dedicated_import` (TiDB Cloud Dedicated) instead.
 
 ## Example Usage
 

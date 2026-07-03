@@ -124,7 +124,9 @@ func (r *ImportResource) Configure(_ context.Context, req resource.ConfigureRequ
 func (r *ImportResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "import resource",
+		MarkdownDescription: "import resource\n\n~> **Deprecated:** This resource relies on a legacy API that has been removed and no longer works. Use `tidbcloud_serverless_import` (TiDB Cloud Starter/Essential) or `tidbcloud_dedicated_import` (TiDB Cloud Dedicated) instead.",
+
+		DeprecationMessage: "This resource relies on a legacy API that has been removed and no longer works. Use tidbcloud_serverless_import (TiDB Cloud Starter/Essential) or tidbcloud_dedicated_import (TiDB Cloud Dedicated) instead.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

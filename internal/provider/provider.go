@@ -177,6 +177,7 @@ func (p *tidbcloudProvider) Resources(ctx context.Context) []func() resource.Res
 		NewServerlessClusterResource,
 		NewServerlessExportResource,
 		NewServerlessBranchResource,
+		NewServerlessImportResource,
 	}
 }
 
