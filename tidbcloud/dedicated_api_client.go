@@ -9,6 +9,7 @@ import (
 
 	"github.com/icholy/digest"
 	"github.com/juju/errors"
+	dedicatedImp "github.com/tidbcloud/terraform-provider-tidbcloud/pkg/tidbcloud/v1beta1/dedicated/imp"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/dedicated"
 )
 
@@ -48,6 +49,10 @@ type TiDBCloudDedicatedClient interface {
 	ListVPCPeerings(ctx context.Context, projectId string, cloudProvider string, pageSize *int32, pageToken *string) (*dedicated.Dedicatedv1beta1ListVpcPeeringsResponse, error)
 	UpdatePublicEndpoint(ctx context.Context, clusterId string, nodeGroupId string, body *dedicated.TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) (*dedicated.V1beta1PublicEndpointSetting, error)
 	GetPublicEndpoint(ctx context.Context, clusterId string, nodeGroupId string) (*dedicated.V1beta1PublicEndpointSetting, error)
+	CreateImport(ctx context.Context, clusterId string, body *dedicatedImp.V1beta1Import) (*dedicatedImp.V1beta1Import, error)
+	GetImport(ctx context.Context, clusterId string, importId string) (*dedicatedImp.V1beta1Import, error)
+	ListImports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*dedicatedImp.V1beta1ListImportsResponse, error)
+	CancelImport(ctx context.Context, clusterId string, importId string) error
 }
 
 func NewDedicatedApiClient(rt http.RoundTripper, dedicatedEndpoint string, userAgent string) (*dedicated.APIClient, error) {
@@ -71,8 +76,30 @@ func NewDedicatedApiClient(rt http.RoundTripper, dedicatedEndpoint string, userA
 	return dedicated.NewAPIClient(dedicatedCfg), nil
 }
 
+func NewDedicatedImportApiClient(rt http.RoundTripper, dedicatedEndpoint string, userAgent string) (*dedicatedImp.APIClient, error) {
+	httpClient := &http.Client{
+		Transport: rt,
+	}
+
+	// v1beta1 import api (dedicated)
+	if dedicatedEndpoint == "" {
+		dedicatedEndpoint = DefaultDedicatedEndpoint
+	}
+	dedicatedURL, err := validateApiUrl(dedicatedEndpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	importCfg := dedicatedImp.NewConfiguration()
+	importCfg.HTTPClient = httpClient
+	importCfg.Host = dedicatedURL.Host
+	importCfg.UserAgent = userAgent
+	return dedicatedImp.NewAPIClient(importCfg), nil
+}
+
 type DedicatedClientDelegate struct {
 	dc *dedicated.APIClient
+	ic *dedicatedImp.APIClient
 }
 
 func NewDedicatedClientDelegate(publicKey string, privateKey string, dedicatedEndpoint string, userAgent string) (TiDBCloudDedicatedClient, error) {
@@ -85,8 +112,13 @@ func NewDedicatedClientDelegate(publicKey string, privateKey string, dedicatedEn
 	if err != nil {
 		return nil, err
 	}
+	ic, err := NewDedicatedImportApiClient(transport, dedicatedEndpoint, userAgent)
+	if err != nil {
+		return nil, err
+	}
 	return &DedicatedClientDelegate{
 		dc: dc,
+		ic: ic,
 	}, nil
 }
 
@@ -339,6 +371,37 @@ func (d *DedicatedClientDelegate) UpdatePublicEndpoint(ctx context.Context, clus
 func (d *DedicatedClientDelegate) GetPublicEndpoint(ctx context.Context, clusterId string, nodeGroupId string) (*dedicated.V1beta1PublicEndpointSetting, error) {
 	resp, h, err := d.dc.TidbNodeGroupServiceAPI.TidbNodeGroupServiceGetPublicEndpointSetting(ctx, clusterId, nodeGroupId).Execute()
 	return resp, parseError(err, h)
+}
+
+func (d *DedicatedClientDelegate) CreateImport(ctx context.Context, clusterId string, body *dedicatedImp.V1beta1Import) (*dedicatedImp.V1beta1Import, error) {
+	r := d.ic.ImportAPI.CreateImport(ctx, clusterId)
+	if body != nil {
+		r = r.Import_(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *DedicatedClientDelegate) GetImport(ctx context.Context, clusterId string, importId string) (*dedicatedImp.V1beta1Import, error) {
+	resp, h, err := d.ic.ImportAPI.GetImport(ctx, clusterId, importId).Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *DedicatedClientDelegate) ListImports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*dedicatedImp.V1beta1ListImportsResponse, error) {
+	r := d.ic.ImportAPI.ListImports(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *DedicatedClientDelegate) CancelImport(ctx context.Context, clusterId string, importId string) error {
+	_, h, err := d.ic.ImportAPI.CancelImport(ctx, clusterId, importId).Execute()
+	return parseError(err, h)
 }
 
 func parseError(err error, resp *http.Response) error {

@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	imp "github.com/tidbcloud/terraform-provider-tidbcloud/pkg/tidbcloud/v1beta1/dedicated/imp"
 	dedicated "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/dedicated"
 )
 
@@ -33,6 +34,20 @@ func NewMockTiDBCloudDedicatedClient(ctrl *gomock.Controller) *MockTiDBCloudDedi
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTiDBCloudDedicatedClient) EXPECT() *MockTiDBCloudDedicatedClientMockRecorder {
 	return m.recorder
+}
+
+// CancelImport mocks base method.
+func (m *MockTiDBCloudDedicatedClient) CancelImport(ctx context.Context, clusterId, importId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CancelImport", ctx, clusterId, importId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CancelImport indicates an expected call of CancelImport.
+func (mr *MockTiDBCloudDedicatedClientMockRecorder) CancelImport(ctx, clusterId, importId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CancelImport", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).CancelImport), ctx, clusterId, importId)
 }
 
 // ChangeClusterRootPassword mocks base method.
@@ -62,6 +77,21 @@ func (m *MockTiDBCloudDedicatedClient) CreateCluster(ctx context.Context, body *
 func (mr *MockTiDBCloudDedicatedClientMockRecorder) CreateCluster(ctx, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateCluster", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).CreateCluster), ctx, body)
+}
+
+// CreateImport mocks base method.
+func (m *MockTiDBCloudDedicatedClient) CreateImport(ctx context.Context, clusterId string, body *imp.V1beta1Import) (*imp.V1beta1Import, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateImport", ctx, clusterId, body)
+	ret0, _ := ret[0].(*imp.V1beta1Import)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateImport indicates an expected call of CreateImport.
+func (mr *MockTiDBCloudDedicatedClientMockRecorder) CreateImport(ctx, clusterId, body interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateImport", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).CreateImport), ctx, clusterId, body)
 }
 
 // CreateNetworkContainer mocks base method.
@@ -210,6 +240,21 @@ func (mr *MockTiDBCloudDedicatedClientMockRecorder) GetCluster(ctx, clusterId in
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCluster", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).GetCluster), ctx, clusterId)
 }
 
+// GetImport mocks base method.
+func (m *MockTiDBCloudDedicatedClient) GetImport(ctx context.Context, clusterId, importId string) (*imp.V1beta1Import, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetImport", ctx, clusterId, importId)
+	ret0, _ := ret[0].(*imp.V1beta1Import)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetImport indicates an expected call of GetImport.
+func (mr *MockTiDBCloudDedicatedClientMockRecorder) GetImport(ctx, clusterId, importId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImport", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).GetImport), ctx, clusterId, importId)
+}
+
 // GetNetworkContainer mocks base method.
 func (m *MockTiDBCloudDedicatedClient) GetNetworkContainer(ctx context.Context, networkContainerId string) (*dedicated.V1beta1NetworkContainer, error) {
 	m.ctrl.T.Helper()
@@ -343,6 +388,21 @@ func (m *MockTiDBCloudDedicatedClient) ListClusters(ctx context.Context, project
 func (mr *MockTiDBCloudDedicatedClientMockRecorder) ListClusters(ctx, projectId, pageSize, pageToken interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).ListClusters), ctx, projectId, pageSize, pageToken)
+}
+
+// ListImports mocks base method.
+func (m *MockTiDBCloudDedicatedClient) ListImports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*imp.V1beta1ListImportsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListImports", ctx, clusterId, pageSize, pageToken)
+	ret0, _ := ret[0].(*imp.V1beta1ListImportsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListImports indicates an expected call of ListImports.
+func (mr *MockTiDBCloudDedicatedClientMockRecorder) ListImports(ctx, clusterId, pageSize, pageToken interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListImports", reflect.TypeOf((*MockTiDBCloudDedicatedClient)(nil).ListImports), ctx, clusterId, pageSize, pageToken)
 }
 
 // ListNetworkContainers mocks base method.
