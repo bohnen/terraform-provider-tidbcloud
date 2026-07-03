@@ -1,0 +1,813 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Dedicated Import API",
+    "description": "TiDB Cloud Dedicated Import API (subset of the TiDB Cloud Dedicated API, generated from tidbcloud-oas-v1beta1-dedicated.swagger.json)",
+    "version": "v1beta1"
+  },
+  "host": "dedicated.tidbapi.com",
+  "basePath": "/v1beta1",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/clusters/{clusterId}/imports": {
+      "get": {
+        "summary": "List import tasks",
+        "description": "Lists all import tasks for a cluster. You can use query parameters to control sorting, pagination, and the number of results returned.",
+        "operationId": "ListImports",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListImportsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to list import tasks for.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageToken",
+            "description": "The pagination token received from a previous [List import tasks](#tag/Import/operation/ListImports) request. Use this token to retrieve the next page of results.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of import tasks to return. If not specified, at most 10 node specs will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100
+          },
+          {
+            "name": "orderBy",
+            "description": "Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime, name desc`. By default, fields are sorted in ascending order.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Import"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "curl",
+            "label": "curl",
+            "source": "curl --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n  --location 'https://dedicated.tidbapi.com/v1beta1/clusters/{clusterId}/imports'"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create an import task",
+        "description": "Creates an import task to import data into a cluster.",
+        "operationId": "CreateImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1Import"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the target cluster where data will be imported.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "import",
+            "description": "The configuration details of the import task to be created.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1Import"
+            }
+          }
+        ],
+        "tags": [
+          "Import"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "curl",
+            "label": "curl",
+            "source": "curl --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n  --location 'https://dedicated.tidbapi.com/v1beta1/clusters/{clusterId}/imports' --header 'Content-Type: application/json' --data '{\n    \"creationDetails\": {\n        \"importOptions\": {\n            \"fileType\": \"CSV\"\n        },\n        \"source\": {\n            \"type\": \"S3\",\n            \"s3\": {\n                \"uri\": \"s3://{bucket_name}/{path_to_data}/\",\n                \"authType\": \"ACCESS_KEY\",\n                \"accessKey\": {\n                    \"id\": \"YOUR_ACCESS_KEY\",\n                    \"secret\": \"YOUR_SECRET_KEY\"\n                }\n            }\n        }\n    }\n}'"
+          }
+        ]
+      }
+    },
+    "/clusters/{clusterId}/imports/{importId}": {
+      "get": {
+        "summary": "Get an import task",
+        "description": "Retrieves details of a specific import task by its ID.",
+        "operationId": "GetImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1Import"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster that contains the import task.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "importId",
+            "description": "The ID of the import task to retrieve.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Import"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "curl",
+            "label": "curl",
+            "source": "curl --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n  --location 'https://dedicated.tidbapi.com/v1beta1/clusters/{clusterId}/imports/{importId}'"
+          }
+        ]
+      }
+    },
+    "/clusters/{clusterId}/imports/{importId}:cancel": {
+      "post": {
+        "summary": "Cancel an import task",
+        "description": "Cancels a running import task by its ID.",
+        "operationId": "CancelImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster that contains the import task.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "importId",
+            "description": "The ID of the import task to cancel.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "description": "The ID of the import task."
+            }
+          }
+        ],
+        "tags": [
+          "Import"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "curl",
+            "label": "curl",
+            "source": "curl --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n  --location --request POST 'https://dedicated.tidbapi.com/v1beta1/clusters/{clusterId}/imports/{importId}:cancel'"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "S3SourceAccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "AKIAIOSFODNN7EXAMPLE",
+          "description": "The access key ID for accessing the S3 source."
+        },
+        "secret": {
+          "type": "string",
+          "example": "THESECRETKEY",
+          "description": "The secret access key for accessing the S3 source. This field is input-only and not returned in responses."
+        }
+      },
+      "description": "The access key of the import source.",
+      "required": [
+        "id",
+        "secret"
+      ]
+    },
+    "commonTable": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "example": "database_name",
+          "description": "The name of the database containing the target table."
+        },
+        "table": {
+          "type": "string",
+          "example": "table_name",
+          "description": "The name of the table within the database."
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string",
+          "description": "A URL or resource name that uniquely identifies the type of the serialized protocol buffer message."
+        }
+      },
+      "additionalProperties": {},
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(&foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := &pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := &pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": <string>,\n      \"lastName\": <string>\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1beta1AzureBlobSource": {
+      "type": "object",
+      "properties": {
+        "authType": {
+          "example": "SAS_TOKEN",
+          "description": "The authentication method for accessing the Azure Blob Storage source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportAzureBlobAuthTypeEnum"
+            }
+          ]
+        },
+        "sasToken": {
+          "type": "string",
+          "example": "?sv=2020-08-04&ss=b&srt=sco&sp=rwdlacup&se=2023-10-01T12:00:00Z&st=2023-09-30T12:00:00Z&spr=https&sig=example",
+          "description": "The Shared Access Signature (SAS) token for accessing the Azure Blob Storage source. This field is input-only and not returned in responses."
+        },
+        "uri": {
+          "type": "string",
+          "example": "azure://myaccount.blob.core.windows.net/mycontainer/mypath/",
+          "description": "The Azure Blob Storage URI of the import source, in the format of `azure://<account>.blob.core.windows.net/<container>/<path>` or `https://<account>.blob.core.windows.net/<container>/<path>`."
+        }
+      },
+      "description": "The Azure Blob Storage source of the import.",
+      "required": [
+        "authType",
+        "uri"
+      ]
+    },
+    "v1beta1CSVFormat": {
+      "type": "object",
+      "properties": {
+        "separator": {
+          "type": "string",
+          "example": ",",
+          "default": ",",
+          "description": "The character used to separate values in the CSV file."
+        },
+        "delimiter": {
+          "type": "string",
+          "example": "\"",
+          "default": "\"",
+          "description": "The character used to enclose string values in the CSV file."
+        },
+        "header": {
+          "type": "boolean",
+          "example": true,
+          "default": true,
+          "description": "Indicates whether the first row of the CSV file contains column headers."
+        },
+        "notNull": {
+          "type": "boolean",
+          "example": false,
+          "default": false,
+          "description": "Indicates whether the columns in the CSV file can be NULL."
+        },
+        "nullValue": {
+          "type": "string",
+          "example": "\\N",
+          "default": "\\N",
+          "description": "The string representation of NULL values in the CSV file."
+        },
+        "backslashEscape": {
+          "type": "boolean",
+          "example": true,
+          "default": true,
+          "description": "Indicates whether to escape backslashes in the CSV file."
+        },
+        "trimLastSeparator": {
+          "type": "boolean",
+          "example": false,
+          "default": false,
+          "description": "Indicates whether to remove trailing separators from each row in the CSV file."
+        }
+      },
+      "description": "The format of the CSV file."
+    },
+    "v1beta1CreationDetails": {
+      "type": "object",
+      "properties": {
+        "importOptions": {
+          "description": "The configuration options for the import task.",
+          "title": "ImportOptions",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportOptions"
+            }
+          ]
+        },
+        "source": {
+          "description": "The data source for the import task.",
+          "title": "ImportSource",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportSource"
+            }
+          ]
+        },
+        "targetTableInfos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1ImportTargetTableInfo"
+          },
+          "description": "A list of destination tables and their configurations for the import.",
+          "title": "ImportTargetTableInfo"
+        },
+        "checkItems": {
+          "type": "array",
+          "example": [],
+          "items": {
+            "$ref": "#/definitions/v1beta1ImportValidationItem"
+          },
+          "description": "A list of validation items that are checked during the import process.",
+          "title": "ImportValidationItem"
+        }
+      },
+      "description": "The details of the import.",
+      "required": [
+        "importOptions",
+        "source"
+      ]
+    },
+    "v1beta1DuplicationHandlingForSQLEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "REPLACE",
+        "IGNORE",
+        "ERROR"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The duplication handling for SQL.\n\n - UNSPECIFIED: The duplication handling for SQL is unknown.\n - REPLACE: The duplication handling for SQL is replace.\n - IGNORE: The duplication handling for SQL is ignore.\n - ERROR: The duplication handling for SQL is error."
+    },
+    "v1beta1GCSSource": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "example": "gs://bucket-name/path/",
+          "description": "The Google Cloud Storage URI of the import source."
+        },
+        "authType": {
+          "example": "SERVICE_ACCOUNT_KEY",
+          "description": "The authentication method for accessing the Google Cloud Storage source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportGcsAuthTypeEnum"
+            }
+          ]
+        },
+        "serviceAccountKey": {
+          "type": "string",
+          "description": "The service account key for accessing the Google Cloud Storage source.",
+          "title": "The service account key"
+        }
+      },
+      "description": "The Google Cloud Storage source of the import.",
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "v1beta1Import": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "clusters/1/imports/1",
+          "description": "The name of the import task, in the format of `clusters/{cluster_id}/imports/{import_id}`.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "example": "1",
+          "description": "The ID of the target cluster for the import.",
+          "readOnly": true
+        },
+        "totalSize": {
+          "type": "string",
+          "format": "int64",
+          "example": 0,
+          "description": "The total size of the data to be imported, in bytes.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2023-10-01T12:00:00Z",
+          "description": "The timestamp when the import task was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
+          "readOnly": true
+        },
+        "completeTime": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2023-10-01T12:01:00Z",
+          "description": "The timestamp when the import task was completed, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
+          "readOnly": true
+        },
+        "state": {
+          "example": "COMPLETED",
+          "description": "The state of the import task.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportStateEnum"
+            }
+          ]
+        },
+        "completePercent": {
+          "type": "integer",
+          "format": "int32",
+          "example": 100,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "The percentage of import progress, excluding post-processing.",
+          "readOnly": true
+        },
+        "message": {
+          "type": "string",
+          "example": "",
+          "description": "An error message if the import task failed. Otherwise, empty.",
+          "readOnly": true
+        },
+        "creator": {
+          "type": "string",
+          "example": "test@example.com",
+          "description": "The email address of the user who create the import task.",
+          "readOnly": true
+        },
+        "creationDetails": {
+          "description": "The additional details about how the import task is created.",
+          "title": "CreationDetails",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1CreationDetails"
+            }
+          ]
+        },
+        "importId": {
+          "type": "string",
+          "example": "1",
+          "description": "The unique identifier of the import task.",
+          "readOnly": true
+        }
+      },
+      "description": "The import.",
+      "required": [
+        "creationDetails"
+      ]
+    },
+    "v1beta1ImportAzureBlobAuthTypeEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "SAS_TOKEN"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The type of the access method.\n\n - UNSPECIFIED: The access method is unknown.\n - SAS_TOKEN: The access method is sas token."
+    },
+    "v1beta1ImportFileTypeEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "CSV",
+        "SQL",
+        "AURORA_SNAPSHOT",
+        "PARQUET"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The type of the file.\n\n - UNSPECIFIED: The type of the file is unknown.\n - CSV: CSV type.\n - SQL: SQL type.\n - AURORA_SNAPSHOT: Aurora snapshot type.\n - PARQUET: Parquet type."
+    },
+    "v1beta1ImportGcsAuthTypeEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "SERVICE_ACCOUNT_KEY"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The type of the access method.\n\n - UNSPECIFIED: The access method is unknown.\n - SERVICE_ACCOUNT_KEY: The access method is service account key."
+    },
+    "v1beta1ImportOptions": {
+      "type": "object",
+      "properties": {
+        "fileType": {
+          "example": "CSV",
+          "description": "The format of the file to import.\n\n- `\"CSV\"`: CSV files. For more information, see [Import CSV Files from Cloud Storage into TiDB Cloud Dedicated](https://docs.pingcap.com/tidbcloud/import-csv-files/).\n\n- `\"PARQUET\"`: Apache Parquet files. For more information, see [Import Apache Parquet Files from Cloud Storage into TiDB Cloud Dedicated](https://docs.pingcap.com/tidbcloud/import-parquet-files/).\n\n- `\"SQL\"`: SQL files.\n\n- `\"AURORA_SNAPSHOT\"`: Amazon Aurora snapshot files.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportFileTypeEnum"
+            }
+          ]
+        },
+        "csvFormat": {
+          "description": "The format specification for CSV files.",
+          "title": "CSVFormat",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1CSVFormat"
+            }
+          ]
+        },
+        "duplicationHandling": {
+          "example": "REPLACE",
+          "description": "Specifies how to handle duplicate records when importing SQL files.\n\n- `\"UNSPECIFIED\"`: the behavior is undefined.\n\n- `\"REPLACE\"`: existing rows are replaced with new data from the import file.\n\n- `\"IGNORE\"`: duplicate rows are skipped.\n\n- `\"ERROR\"`: the import fails if a duplicate row is found.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1DuplicationHandlingForSQLEnum"
+            }
+          ]
+        },
+        "validateOnly": {
+          "type": "boolean",
+          "example": false,
+          "description": "If set to `true`, the request is validated but not executed. Defaults to `false`."
+        }
+      },
+      "description": "The options of the import task.",
+      "required": [
+        "fileType"
+      ]
+    },
+    "v1beta1ImportS3AuthTypeEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The type of the access method.\n\n - UNSPECIFIED: The access method is unknown.\n - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
+    "v1beta1ImportSource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "example": "S3",
+          "description": "The source from which data is imported.\n\nWhen this field is set, the corresponding configuration field must also be provided. For example, if type is `S3`, the `s3` field must be specified.\n\n- `\"UNSPECIFIED\"`: the import source is not specified.\n\n- `\"S3\"`: import from Amazon S3.\n\n- `\"GCS\"`: import from Google Cloud Storage.\n\n- `\"AZURE_BLOB\"`: import from Azure Blob Storage.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportSourceTypeEnum"
+            }
+          ]
+        },
+        "s3": {
+          "description": "The configuration details for importing from Amazon S3. This is required when `type` is `S3`.",
+          "title": "S3Source",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1S3Source"
+            }
+          ]
+        },
+        "gcs": {
+          "description": "The configuration details for importing from Google Cloud Storage. This is required when `type` is `GCS`.",
+          "title": "GCSSource",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1GCSSource"
+            }
+          ]
+        },
+        "azureBlob": {
+          "description": "The configuration details for importing from Azure Blob Storage. This is required when `type` is `AZURE_BLOB`.",
+          "title": "AzureBlobSource",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1AzureBlobSource"
+            }
+          ]
+        }
+      },
+      "description": "The source of the import.",
+      "required": [
+        "type"
+      ]
+    },
+    "v1beta1ImportSourceTypeEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "S3",
+        "GCS",
+        "AZURE_BLOB"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The source type of the import.\n\n - UNSPECIFIED: Indicates that the import source is not specified.\n - S3: Indicates that the import source is an AWS S3 resource.\n - GCS: Indicates that the import source is a Google Cloud Storage resource.\n - AZURE_BLOB: Indicates that the import source is an Azure Blob Storage resource."
+    },
+    "v1beta1ImportStateEnum": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "PREPARING",
+        "IMPORTING",
+        "COMPLETED",
+        "FAILED",
+        "CANCELING",
+        "CANCELED"
+      ],
+      "default": "UNSPECIFIED",
+      "description": "The state of the import.\n\n - UNSPECIFIED: Indicates that the import state is not specified.\n - PREPARING: Indicates that the import is being prepared.\n - IMPORTING: Indicates that the import is in progress.\n - COMPLETED: Indicates that the import is completed successfully.\n - FAILED: Indicates that the import has failed.\n - CANCELING: Indicates that the import is in the process of being canceled.\n - CANCELED: Indicates that the import has been canceled."
+    },
+    "v1beta1ImportTargetTableInfo": {
+      "type": "object",
+      "properties": {
+        "targetTable": {
+          "description": "The target table where the data is imported.",
+          "title": "Table",
+          "allOf": [
+            {
+              "$ref": "#/definitions/commonTable"
+            }
+          ]
+        },
+        "customFile": {
+          "type": "string",
+          "example": "s3://mybucket/myfolder/my-data1.csv",
+          "description": "The custom file URI to import data into the target table. If not specified, TiDB Cloud Dedicated uses the default naming conventions to match files to tables."
+        },
+        "matchedUri": {
+          "type": "string",
+          "description": "The actual source file URI that is matched to this table during import processing."
+        }
+      },
+      "description": "The target table info of the import task."
+    },
+    "v1beta1ImportValidationItem": {
+      "type": "string",
+      "enum": [
+        "IMPORT_VALIDATION_ITEM_UNSPECIFIED",
+        "SOURCE_ACCESS_CHECK",
+        "TARGET_ACCESS_CHECK",
+        "FILTER_AND_RULE_CHECK",
+        "IMPORT_PRECHECK",
+        "TARGET_TABLE_EMPTY_CHECK",
+        "ESTIMATE_SIZE",
+        "IMPORT_DATA_ONLY_CHECK"
+      ],
+      "default": "IMPORT_VALIDATION_ITEM_UNSPECIFIED",
+      "description": "The validation item of the import.\n\n - IMPORT_VALIDATION_ITEM_UNSPECIFIED: The validation item is unspecified.\n - SOURCE_ACCESS_CHECK: The validation item is source access check.\n - TARGET_ACCESS_CHECK: The validation item is target access check.(deprecated)\n - FILTER_AND_RULE_CHECK: The validation item is filter and rule check.(deprecated)\n - IMPORT_PRECHECK: The validation item is import precheck.\n - TARGET_TABLE_EMPTY_CHECK: The validation item is target table empty check.\n - ESTIMATE_SIZE: The validation item is estimate size.(deprecated)\n - IMPORT_DATA_ONLY_CHECK: The validation item is import data only check."
+    },
+    "v1beta1ListImportsResponse": {
+      "type": "object",
+      "properties": {
+        "imports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1Import"
+          },
+          "description": "The list of import tasks.",
+          "title": "Import",
+          "readOnly": true
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "example": 1,
+          "description": "The total number of import tasks.",
+          "title": "aip:ignore",
+          "readOnly": true
+        },
+        "nextPageToken": {
+          "type": "string",
+          "example": "next_page_token",
+          "description": "The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages.",
+          "readOnly": true
+        }
+      },
+      "description": "The response message for listing imports."
+    },
+    "v1beta1S3Source": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "example": "s3://bucket-name/path/",
+          "description": "The S3 URI of the import source."
+        },
+        "authType": {
+          "example": "ROLE_ARN",
+          "description": "The authentication method for accessing the S3 bucket.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ImportS3AuthTypeEnum"
+            }
+          ]
+        },
+        "roleArn": {
+          "type": "string",
+          "example": "arn:aws:iam::123456789012:role/MyRole",
+          "description": "The AWS IAM role ARN used for access. This is required when `authType` is set to `\"ROLE_ARN\"`."
+        },
+        "accessKey": {
+          "description": "The AWS access key credentials used for access. This is required when `authType` is set to `\"ACCESS_KEY\"`.",
+          "title": "AccessKey",
+          "allOf": [
+            {
+              "$ref": "#/definitions/S3SourceAccessKey"
+            }
+          ]
+        }
+      },
+      "description": "The S3 source of the import.",
+      "required": [
+        "uri",
+        "authType"
+      ]
+    }
+  }
+}

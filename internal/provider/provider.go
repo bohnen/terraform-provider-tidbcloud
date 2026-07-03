@@ -173,6 +173,7 @@ func (p *tidbcloudProvider) Resources(ctx context.Context) []func() resource.Res
 		NewDedicatedPrivateEndpointConnectionResource,
 		NewDedicatedNetworkContainerResource,
 		NewDedicatedVpcPeeringResource,
+		NewDedicatedImportResource,
 
 		NewServerlessClusterResource,
 		NewServerlessExportResource,
