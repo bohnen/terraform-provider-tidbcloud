@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type V1beta1ImportOptions struct {
 	// Specifies how to handle duplicate records when importing SQL files.  - `\"UNSPECIFIED\"`: the behavior is undefined.  - `\"REPLACE\"`: existing rows are replaced with new data from the import file.  - `\"IGNORE\"`: duplicate rows are skipped.  - `\"ERROR\"`: the import fails if a duplicate row is found.
 	DuplicationHandling *V1beta1DuplicationHandlingForSQLEnum `json:"duplicationHandling,omitempty"`
 	// If set to `true`, the request is validated but not executed. Defaults to `false`.
-	ValidateOnly *bool `json:"validateOnly,omitempty"`
+	ValidateOnly         *bool `json:"validateOnly,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1ImportOptions V1beta1ImportOptions
@@ -191,6 +191,11 @@ func (o V1beta1ImportOptions) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ValidateOnly) {
 		toSerialize["validateOnly"] = o.ValidateOnly
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -218,15 +223,23 @@ func (o *V1beta1ImportOptions) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1ImportOptions := _V1beta1ImportOptions{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1ImportOptions)
+	err = json.Unmarshal(data, &varV1beta1ImportOptions)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1ImportOptions(varV1beta1ImportOptions)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fileType")
+		delete(additionalProperties, "csvFormat")
+		delete(additionalProperties, "duplicationHandling")
+		delete(additionalProperties, "validateOnly")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

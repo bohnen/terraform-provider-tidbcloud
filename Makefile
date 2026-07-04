@@ -24,7 +24,7 @@ generate-dedicated-import-client: ## Regenerate the dedicated import API client 
 		-o pkg/tidbcloud/v1beta1/dedicated/imp \
 		--package-name imp \
 		--global-property apis,models,supportingFiles \
-		--additional-properties=enumClassPrefix=true,isGoSubmodule=false,withGoMod=false,generateInterfaces=false
+		--additional-properties=enumClassPrefix=true,isGoSubmodule=false,withGoMod=false,generateInterfaces=false,disallowAdditionalPropertiesIfNotPresent=false
 	rm -rf pkg/tidbcloud/v1beta1/dedicated/imp/git_push.sh \
 		pkg/tidbcloud/v1beta1/dedicated/imp/test \
 		pkg/tidbcloud/v1beta1/dedicated/imp/docs \

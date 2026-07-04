@@ -24,8 +24,11 @@ type V1beta1ListImportsResponse struct {
 	// The total number of import tasks.
 	TotalSize *int32 `json:"totalSize,omitempty"`
 	// The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages.
-	NextPageToken *string `json:"nextPageToken,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1ListImportsResponse V1beta1ListImportsResponse
 
 // NewV1beta1ListImportsResponse instantiates a new V1beta1ListImportsResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o V1beta1ListImportsResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NextPageToken) {
 		toSerialize["nextPageToken"] = o.NextPageToken
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ListImportsResponse) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ListImportsResponse := _V1beta1ListImportsResponse{}
+
+	err = json.Unmarshal(data, &varV1beta1ListImportsResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ListImportsResponse(varV1beta1ListImportsResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "imports")
+		delete(additionalProperties, "totalSize")
+		delete(additionalProperties, "nextPageToken")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ListImportsResponse struct {

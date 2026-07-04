@@ -22,8 +22,11 @@ type CommonTable struct {
 	// The name of the database containing the target table.
 	Schema *string `json:"schema,omitempty"`
 	// The name of the table within the database.
-	Table *string `json:"table,omitempty"`
+	Table                *string `json:"table,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _CommonTable CommonTable
 
 // NewCommonTable instantiates a new CommonTable object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o CommonTable) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Table) {
 		toSerialize["table"] = o.Table
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *CommonTable) UnmarshalJSON(data []byte) (err error) {
+	varCommonTable := _CommonTable{}
+
+	err = json.Unmarshal(data, &varCommonTable)
+
+	if err != nil {
+		return err
+	}
+
+	*o = CommonTable(varCommonTable)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "schema")
+		delete(additionalProperties, "table")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableCommonTable struct {
