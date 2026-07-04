@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -43,7 +42,8 @@ type V1beta1Import struct {
 	// The additional details about how the import task is created.
 	CreationDetails V1beta1CreationDetails `json:"creationDetails"`
 	// The unique identifier of the import task.
-	ImportId *string `json:"importId,omitempty"`
+	ImportId             *string `json:"importId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1Import V1beta1Import
@@ -451,6 +451,11 @@ func (o V1beta1Import) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ImportId) {
 		toSerialize["importId"] = o.ImportId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -478,15 +483,30 @@ func (o *V1beta1Import) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1Import := _V1beta1Import{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1Import)
+	err = json.Unmarshal(data, &varV1beta1Import)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1Import(varV1beta1Import)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "totalSize")
+		delete(additionalProperties, "createTime")
+		delete(additionalProperties, "completeTime")
+		delete(additionalProperties, "state")
+		delete(additionalProperties, "completePercent")
+		delete(additionalProperties, "message")
+		delete(additionalProperties, "creator")
+		delete(additionalProperties, "creationDetails")
+		delete(additionalProperties, "importId")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

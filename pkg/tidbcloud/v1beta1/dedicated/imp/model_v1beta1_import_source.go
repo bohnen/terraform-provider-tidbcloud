@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type V1beta1ImportSource struct {
 	// The configuration details for importing from Google Cloud Storage. This is required when `type` is `GCS`.
 	Gcs *V1beta1GCSSource `json:"gcs,omitempty"`
 	// The configuration details for importing from Azure Blob Storage. This is required when `type` is `AZURE_BLOB`.
-	AzureBlob *V1beta1AzureBlobSource `json:"azureBlob,omitempty"`
+	AzureBlob            *V1beta1AzureBlobSource `json:"azureBlob,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1ImportSource V1beta1ImportSource
@@ -191,6 +191,11 @@ func (o V1beta1ImportSource) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AzureBlob) {
 		toSerialize["azureBlob"] = o.AzureBlob
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -218,15 +223,23 @@ func (o *V1beta1ImportSource) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1ImportSource := _V1beta1ImportSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1ImportSource)
+	err = json.Unmarshal(data, &varV1beta1ImportSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1ImportSource(varV1beta1ImportSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "s3")
+		delete(additionalProperties, "gcs")
+		delete(additionalProperties, "azureBlob")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

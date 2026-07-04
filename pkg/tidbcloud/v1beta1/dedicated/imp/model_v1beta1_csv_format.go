@@ -32,8 +32,11 @@ type V1beta1CSVFormat struct {
 	// Indicates whether to escape backslashes in the CSV file.
 	BackslashEscape *bool `json:"backslashEscape,omitempty"`
 	// Indicates whether to remove trailing separators from each row in the CSV file.
-	TrimLastSeparator *bool `json:"trimLastSeparator,omitempty"`
+	TrimLastSeparator    *bool `json:"trimLastSeparator,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1CSVFormat V1beta1CSVFormat
 
 // NewV1beta1CSVFormat instantiates a new V1beta1CSVFormat object
 // This constructor will assign default values to properties that have it defined,
@@ -335,7 +338,39 @@ func (o V1beta1CSVFormat) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TrimLastSeparator) {
 		toSerialize["trimLastSeparator"] = o.TrimLastSeparator
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1CSVFormat) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1CSVFormat := _V1beta1CSVFormat{}
+
+	err = json.Unmarshal(data, &varV1beta1CSVFormat)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1CSVFormat(varV1beta1CSVFormat)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "separator")
+		delete(additionalProperties, "delimiter")
+		delete(additionalProperties, "header")
+		delete(additionalProperties, "notNull")
+		delete(additionalProperties, "nullValue")
+		delete(additionalProperties, "backslashEscape")
+		delete(additionalProperties, "trimLastSeparator")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1CSVFormat struct {

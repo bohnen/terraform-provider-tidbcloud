@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type V1beta1CreationDetails struct {
 	// A list of destination tables and their configurations for the import.
 	TargetTableInfos []V1beta1ImportTargetTableInfo `json:"targetTableInfos,omitempty"`
 	// A list of validation items that are checked during the import process.
-	CheckItems []V1beta1ImportValidationItem `json:"checkItems,omitempty"`
+	CheckItems           []V1beta1ImportValidationItem `json:"checkItems,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1CreationDetails V1beta1CreationDetails
@@ -182,6 +182,11 @@ func (o V1beta1CreationDetails) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CheckItems) {
 		toSerialize["checkItems"] = o.CheckItems
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -210,15 +215,23 @@ func (o *V1beta1CreationDetails) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1CreationDetails := _V1beta1CreationDetails{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1CreationDetails)
+	err = json.Unmarshal(data, &varV1beta1CreationDetails)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1CreationDetails(varV1beta1CreationDetails)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "importOptions")
+		delete(additionalProperties, "source")
+		delete(additionalProperties, "targetTableInfos")
+		delete(additionalProperties, "checkItems")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

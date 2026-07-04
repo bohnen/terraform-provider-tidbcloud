@@ -24,8 +24,11 @@ type V1beta1ImportTargetTableInfo struct {
 	// The custom file URI to import data into the target table. If not specified, TiDB Cloud Dedicated uses the default naming conventions to match files to tables.
 	CustomFile *string `json:"customFile,omitempty"`
 	// The actual source file URI that is matched to this table during import processing.
-	MatchedUri *string `json:"matchedUri,omitempty"`
+	MatchedUri           *string `json:"matchedUri,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1ImportTargetTableInfo V1beta1ImportTargetTableInfo
 
 // NewV1beta1ImportTargetTableInfo instantiates a new V1beta1ImportTargetTableInfo object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o V1beta1ImportTargetTableInfo) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MatchedUri) {
 		toSerialize["matchedUri"] = o.MatchedUri
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ImportTargetTableInfo) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ImportTargetTableInfo := _V1beta1ImportTargetTableInfo{}
+
+	err = json.Unmarshal(data, &varV1beta1ImportTargetTableInfo)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ImportTargetTableInfo(varV1beta1ImportTargetTableInfo)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "targetTable")
+		delete(additionalProperties, "customFile")
+		delete(additionalProperties, "matchedUri")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ImportTargetTableInfo struct {

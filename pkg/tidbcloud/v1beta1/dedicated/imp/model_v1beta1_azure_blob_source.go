@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type V1beta1AzureBlobSource struct {
 	// The Shared Access Signature (SAS) token for accessing the Azure Blob Storage source. This field is input-only and not returned in responses.
 	SasToken *string `json:"sasToken,omitempty"`
 	// The Azure Blob Storage URI of the import source, in the format of `azure://<account>.blob.core.windows.net/<container>/<path>` or `https://<account>.blob.core.windows.net/<container>/<path>`.
-	Uri string `json:"uri"`
+	Uri                  string `json:"uri"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1AzureBlobSource V1beta1AzureBlobSource
@@ -145,6 +145,11 @@ func (o V1beta1AzureBlobSource) ToMap() (map[string]interface{}, error) {
 		toSerialize["sasToken"] = o.SasToken
 	}
 	toSerialize["uri"] = o.Uri
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -173,15 +178,22 @@ func (o *V1beta1AzureBlobSource) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1AzureBlobSource := _V1beta1AzureBlobSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1AzureBlobSource)
+	err = json.Unmarshal(data, &varV1beta1AzureBlobSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1AzureBlobSource(varV1beta1AzureBlobSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "sasToken")
+		delete(additionalProperties, "uri")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

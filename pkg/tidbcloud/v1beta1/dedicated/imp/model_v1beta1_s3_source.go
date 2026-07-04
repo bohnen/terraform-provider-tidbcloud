@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type V1beta1S3Source struct {
 	// The AWS IAM role ARN used for access. This is required when `authType` is set to `\"ROLE_ARN\"`.
 	RoleArn *string `json:"roleArn,omitempty"`
 	// The AWS access key credentials used for access. This is required when `authType` is set to `\"ACCESS_KEY\"`.
-	AccessKey *S3SourceAccessKey `json:"accessKey,omitempty"`
+	AccessKey            *S3SourceAccessKey `json:"accessKey,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1S3Source V1beta1S3Source
@@ -182,6 +182,11 @@ func (o V1beta1S3Source) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AccessKey) {
 		toSerialize["accessKey"] = o.AccessKey
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -210,15 +215,23 @@ func (o *V1beta1S3Source) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1S3Source := _V1beta1S3Source{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1S3Source)
+	err = json.Unmarshal(data, &varV1beta1S3Source)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1S3Source(varV1beta1S3Source)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uri")
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "roleArn")
+		delete(additionalProperties, "accessKey")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

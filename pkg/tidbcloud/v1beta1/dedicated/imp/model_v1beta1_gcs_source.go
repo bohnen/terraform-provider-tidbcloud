@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type V1beta1GCSSource struct {
 	// The authentication method for accessing the Google Cloud Storage source.
 	AuthType V1beta1ImportGcsAuthTypeEnum `json:"authType"`
 	// The service account key for accessing the Google Cloud Storage source.
-	ServiceAccountKey *string `json:"serviceAccountKey,omitempty"`
+	ServiceAccountKey    *string `json:"serviceAccountKey,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1GCSSource V1beta1GCSSource
@@ -145,6 +145,11 @@ func (o V1beta1GCSSource) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAccountKey) {
 		toSerialize["serviceAccountKey"] = o.ServiceAccountKey
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -173,15 +178,22 @@ func (o *V1beta1GCSSource) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1GCSSource := _V1beta1GCSSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1GCSSource)
+	err = json.Unmarshal(data, &varV1beta1GCSSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1GCSSource(varV1beta1GCSSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uri")
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "serviceAccountKey")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }
