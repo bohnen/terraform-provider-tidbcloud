@@ -60,7 +60,7 @@ resource "tidbcloud_dedicated_import" "example_azure_blob" {
   source = {
     type = "AZURE_BLOB"
     azure_blob = {
-      uri       = "azure://youraccount.blob.core.windows.net/your-container/your-path/"
+      uri       = "https://youraccount.blob.core.windows.net/your-container/your-path/"
       auth_type = "SAS_TOKEN"
       sas_token = "your-sas-token"
     }
@@ -145,7 +145,7 @@ Optional:
 Required:
 
 - `auth_type` (String) The auth method of the import source. Available value is SAS_TOKEN.
-- `uri` (String) The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>.
+- `uri` (String) The Azure Blob URI of the import source, in the format of https://<account>.blob.core.windows.net/<container>/<path>. (The azure:// scheme documented for the serverless import API is currently rejected by the dedicated import API; use https://.)
 
 Optional:
 

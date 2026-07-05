@@ -214,7 +214,7 @@ func (r *dedicatedImportResource) Schema(_ context.Context, _ resource.SchemaReq
 						Optional:            true,
 						Attributes: map[string]schema.Attribute{
 							"uri": schema.StringAttribute{
-								MarkdownDescription: "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>.",
+								MarkdownDescription: "The Azure Blob URI of the import source, in the format of https://<account>.blob.core.windows.net/<container>/<path>. (The azure:// scheme documented for the serverless import API is currently rejected by the dedicated import API; use https://.)",
 								Required:            true,
 							},
 							"auth_type": schema.StringAttribute{

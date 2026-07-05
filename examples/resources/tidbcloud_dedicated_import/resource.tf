@@ -45,7 +45,7 @@ resource "tidbcloud_dedicated_import" "example_azure_blob" {
   source = {
     type = "AZURE_BLOB"
     azure_blob = {
-      uri       = "azure://youraccount.blob.core.windows.net/your-container/your-path/"
+      uri       = "https://youraccount.blob.core.windows.net/your-container/your-path/"
       auth_type = "SAS_TOKEN"
       sas_token = "your-sas-token"
     }
